@@ -7,6 +7,7 @@ COPY Frontend/package*.json ./
 RUN npm install
 
 COPY Frontend/ .
+RUN env
 RUN npm run build
 
 # ---------- Stage 2: Backend ----------
