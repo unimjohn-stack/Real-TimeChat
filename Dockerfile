@@ -1,17 +1,24 @@
-# Use Node.js 22
 FROM node:22-bookworm-slim
 
+# ---------- Build Frontend ----------
+WORKDIR /frontend
+
+COPY Frontend/package*.json ./
+RUN npm install
+
+COPY Frontend/ .
+RUN npm run build
+
+# ---------- Build Backend ----------
 WORKDIR /app
 
-# Install backend dependencies
 COPY Backend/package*.json ./
 RUN npm install
 
-# Copy backend source
 COPY Backend/ .
 
-# Copy the built frontend into public
-COPY Frontend/dist ./public
+# Copy built frontend into backend/public
+COPY --from=0 /frontend/dist ./public
 
 ENV NODE_ENV=production
 ENV PORT=3001
