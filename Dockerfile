@@ -4,14 +4,14 @@ FROM node:22-bookworm-slim
 WORKDIR /app
 
 # Install backend dependencies
-COPY backend/package*.json ./
+COPY Backend/package*.json ./
 RUN npm install
 
 # Copy backend source
-COPY backend/ .
+COPY Backend/ .
 
 # Copy the built frontend into public
-COPY frontend/dist ./public
+COPY Frontend/dist ./public
 
 ENV NODE_ENV=production
 ENV PORT=3001
