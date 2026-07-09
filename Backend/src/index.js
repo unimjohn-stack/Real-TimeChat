@@ -9,15 +9,23 @@ import { connectDB } from "./lib/db.js";
 import { clerkMiddleware } from '@clerk/express';
 import cors from 'cors'
 import job from "./lib/cron.js";
+// import webhookRouter from "./routes/webhook.js"
+import clerkwebhook from './webhooks/clerk.webhook.js'
 
 const app = express();
 
 const PORT = process.env.PORT;
-const FRONTENDURL = process.env.FRONTENDURL;
+const FRONTEND_URL = process.env.FRONTEND_URL;
+
+app.use(cors({
+    origin:FRONTEND_URL,
+    credentials: true,
+}));
 const publicDir = path.join(process.cwd(), "public")
 // middleWare
+app.use("/api/webhooks", express.raw({ type: "application/json"}), clerkwebhook);
 app.use(express.json());
-app.use(cors({origin:FRONTENDURL, credentials: true}));
+// app.use(cors({origin:FRONTENDURL, credentials: true}));
 app.use(clerkMiddleware());
 
 

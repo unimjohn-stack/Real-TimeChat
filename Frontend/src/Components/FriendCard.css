@@ -1,0 +1,57 @@
+.friend-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.friend-card:hover {
+  background: #1f2937;
+}
+
+.friend-card.active {
+  background: #2563eb;
+}
+
+.friend-card img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.friend-info {
+  flex: 1;
+}
+
+.friend-info h4 {
+  color: white;
+  margin-bottom: 4px;
+  font-size: 1rem;
+}
+
+.friend-info p {
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+.friend-card.active .friend-info p {
+  color: #dbeafe;
+}
+
+.status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.online {
+  background: #22c55e;
+}
+
+.offline {
+  background: #6b7280;
+}
