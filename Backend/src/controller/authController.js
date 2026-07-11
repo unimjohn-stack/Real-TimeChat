@@ -1,4 +1,4 @@
-import { User } from "@clerk/express";
+// import { User } from "@clerk/express";
 
 export async function checkAuth (req,res, next) {
     if (!req.user) {

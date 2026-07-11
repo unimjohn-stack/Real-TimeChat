@@ -12,6 +12,7 @@ import job from "./lib/cron.js";
 // import webhookRouter from "./routes/webhook.js"
 import clerkwebhook from './webhooks/clerk.webhook.js'
 import authRoutes from './routes/authRoute.js'
+import messageRoute from './routes/messageRoutes.js'
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.get("/health", (req,res) => {
     res.status(200).json({ ok: true });
 });
 app.use("api/auth", authRoutes);
+app.use("api/messages", messageRoute);
 
 if(fs.existsSync(publicDir)){
     app.use(express.static(publicDir));
