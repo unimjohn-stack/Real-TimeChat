@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import Message from '../models/messageModel.js'
 import { hasImageKitConfig, uploadChatMedia } from "../lib/imagekit.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 
 export async function getUsersForSideBar (req, res) {
     try {
@@ -83,7 +84,13 @@ export async function sendMessages (req, res) {
             video: videoUrl,
         })
         await newMessage.save();
-        res.status(201).json(newMessage)
+
+        const receieverSocketId = getReceiverSocketId(receiverId)
+        // Only send message in real time if client is online
+        if (receieverSocketId) {
+            io.to(receieverSocketId).emit("newMessage", newMessage)
+        }
+        res.status(201).json(newMessage);
     } catch(error) {
         console.error("Error in sendMessages", error.message);
         res.status(500).json("Internal Server Error");
