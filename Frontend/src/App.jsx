@@ -8,13 +8,14 @@ import { Routes, Route, Navigate } from 'react-router'
 import ChatPage from './Pages/ChatPage'
 import AuthPage from './Pages/AuthPage'
 import { useAuth } from '@clerk/react'
+import PageLoader from './Components/PageLoader'
 
 function App() {
 
   const { isSignedIn, isLoaded } = useAuth();
 
   // todo...
-  if (!isLoaded) return <p>Loading...</p>;
+  if (!isLoaded) return <PageLoader />;
 
   return (
     <ThemeProvider>

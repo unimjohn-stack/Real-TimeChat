@@ -6,7 +6,7 @@ import { ClerkProvider } from '@clerk/react'
 import { BrowserRouter } from 'react-router'
 
 const key = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-console.log("Clerk key:", key);
+// console.log("Clerk key:", key);
 
 createRoot(document.getElementById('root')).render(
 
