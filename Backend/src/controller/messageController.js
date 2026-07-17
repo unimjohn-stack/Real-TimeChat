@@ -6,8 +6,8 @@ import { getReceiverSocketId, io } from "../lib/socket.js";
 export async function getUsersForSideBar (req, res) {
     try {
         const loggedInUser = req.user._id;
-        const filteredUsers = await User.find({_id: {$ne: loggedInUser}}).select("-clerkId");
-        res.status(200).json(fileredUsers);;
+        const filteredUsers = await User.find({_id: {$ne: loggedInUser}});
+        res.status(200).json(filteredUsers);;
     } catch (error) {
         console.error("Error in getUsersForSideBar:", error.message);
         res.status(500).json({ message: "Internal Server Error"});
@@ -17,25 +17,72 @@ export async function getUsersForSideBar (req, res) {
 export async function getConversationsForSideBar(req, res) {
     try {
         const loggedInUserId = req.user._id;
+
         const conversations = await Message.aggregate([
-            // Keep Only Messages sent
-            { $match: { $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }] } },
-            // The partner is the other person in text chain
-            { $group: { _id: [{ $cond: ["$senderId", loggedInUserId], }, "receiverId", "$senderId"] }, lastMessageAt: { $max: "$createdAt" }, },
-            // Put most recent conversation at the top
-            { $sort: { lastMessageAt: -1 } },
-            // Look Up each Partners user Profile and return as an array
-            { $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "user" } },
-            // Pull Out profile from array and make it a docuement
-            { $replaceRoot: { newRoot: { $first: "user" } } },
-            // Hide Private ClerkId from result
-            { $project: { clerkId: 0 } },
+            // Find messages involving the logged-in user
+            {
+                $match: {
+                    $or: [
+                        { senderId: loggedInUserId },
+                        { receiverId: loggedInUserId }
+                    ]
+                }
+            },
+
+            // Get the other person in each conversation
+            {
+                $group: {
+                    _id: {
+                        $cond: [
+                            { $eq: ["$senderId", loggedInUserId] },
+                            "$receiverId",
+                            "$senderId"
+                        ]
+                    },
+                    lastMessageAt: {
+                        $max: "$createdAt"
+                    }
+                }
+            },
+
+            // Most recent conversations first
+            {
+                $sort: {
+                    lastMessageAt: -1
+                }
+            },
+
+            // Get the user's profile
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "user"
+                }
+            },
+
+            // Convert user array into a user document
+            {
+                $replaceRoot: {
+                    newRoot: {
+                        $first: "$user"
+                    }
+                }
+            }
         ]);
 
         res.status(200).json(conversations);
-    } catch(error) {
-        console.error("Error in getConversationsForSideBar:", error.message);
-        res.status(500).json({ message: "Internal Server Error"})
+
+    } catch (error) {
+        console.error(
+            "Error in getConversationsForSideBar:",
+            error.message
+        );
+
+        res.status(500).json({
+            message: "Internal Server Error"
+        });
     }
 }
 

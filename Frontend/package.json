@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@clerk/react": "^6.11.4",
     "@heroui/react": "^3.2.2",
     "@heroui/styles": "^3.2.2",
     "@tailwindcss/vite": "^4.3.2",

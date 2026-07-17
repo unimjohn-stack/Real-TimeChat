@@ -1,21 +1,23 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema({
     
-    clerkId: {
+    fullName: {
         type:String,
         required: true,
-        unique: true,
+        // unique: true,
     },
     email: {
         type:String,
         required: true,
         unique: true,
+        lowercase: true,
+        trim: true,
     },
-    fullName: {
-        type:String,
+    password: {
+        type: String,
         required: true,
-        // unique: true,
+        minlength: 6,
     },
     profilePic: {
         type: String,

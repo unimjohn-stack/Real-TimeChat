@@ -1,8 +1,11 @@
-import { useClerk } from "@clerk/react";
-import { Button } from "@heroui/react";
+// import { useClerk } from "@clerk/react";
+import { Button, Input } from "@heroui/react";
 import { ArrowRightIcon, ShieldCheckIcon, SparklesIcon } from "lucide-react";
 import { AppLogo } from "../AppLogo";
 import { AuthCardShell } from "./AuthCardShell";
+import { useState } from "react";
+import { useAuthStore} from '../../store/useAuthStore';
+import toast from 'react-hot-toast';
 
 const AFTER_AUTH = "/";
 
@@ -22,8 +25,30 @@ const continueButtonClassName = [
 
 function AuthActionPanel() {
 
-  const clerk = useClerk();
+  const [isLogin, setIsLogin] = useState(true);
+  const { login, signup, isLoggingIn, isSigningUp, } = useAuthStore();
+  const [formData, setFormData] = useState({ fullName: "", email: "", password: "", });
 
+  const isLoading = isLoggingIn || isSigningUp;
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value, });
+  };
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    const result = isLogin ?
+    await login({
+      email: formData.email,
+      password: formData.password,
+    })
+     : await signup(formData);
+    if(!result.success) {
+      toast.error(result.message);
+      return;
+    }
+
+    toast.success(isLogin ? "Welcome back" : "Account created successfully!")
+  }
   return (
     <section className="relative flex flex-1 flex-col items-stretch justify-center overflow-hidden px-5 py-12 sm:px-10 md:px-14 md:py-10 lg:px-16">
       <AuthCardShell>
@@ -44,34 +69,21 @@ function AuthActionPanel() {
               Secure entry
             </span>
           </div>
+          <h1 className="mt-3 text-2xl font-semibold"> {isLogin ? "Welcome back" : "Create your account"} </h1> 
+          <p className="mt-2 text-sm text-default-500"> {isLogin ? "Sign in to continue to AmeboChat." : "Join AmeboChat and start connecting."} </p>
         </div>
 
-        {
-          <Button
-            fullWidth
-            size="lg"
-            variant="primary"
-            className={continueButtonClassName}
-            onPress={() => {
-              clerk.openSignIn({ fallbackRedirectUrl: AFTER_AUTH, forceRedirectUrl: AFTER_AUTH });
-            }}
-          >
-            <span className="relative z-1 flex items-center justify-center gap-2">
-              Continue
-              <ArrowRightIcon
-                className="size-4 transition-transform group-hover:translate-x-0.5"
-                aria-hidden
-              />
-            </span>
-          </Button>
-        }
-
-        <div className="mt-8 flex items-center justify-center gap-2 border-t border-black/6 pt-6 text-[11px] text-[#8E8E93] dark:border-white/8 dark:text-[#636366]">
-          <ShieldCheckIcon
-            className="size-3.5 shrink-0 text-[#34C759] dark:text-[#30D158]"
-            strokeWidth={2}
-            aria-hidden
-          />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4"> {!isLogin && ( 
+          <Input name="fullName" label="Full name" placeholder="Enter your full name" value={formData.fullName} onChange={handleChange} isRequired /> )} 
+          <Input name="email" type="email" label="Email" placeholder="Enter your email" value={formData.email} onChange={handleChange} isRequired /> <Input name="password" type="password" label="Password" placeholder="Enter your password" value={formData.password} onChange={handleChange} isRequired /> 
+        <Button type="submit" fullWidth size="lg" variant="primary" className={continueButtonClassName} isLoading={isLoading} > <span className="relative z-1 flex items-center justify-center gap-2"> {isLogin ? "Sign in" : "Create account"} {!isLoading && ( <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden /> )} </span> 
+        </Button> 
+        </form> 
+        <div className="mt-5 text-center text-sm text-default-500"> {isLogin ? "Don't have an account?" : "Already have an account?"}{" "} 
+          <button type="button" onClick={() => { setIsLogin(!isLogin); setFormData({ fullName: "", email: "", password: "", }); }} className="font-semibold text-accent hover:underline" > {isLogin ? "Sign up" : "Sign in"} </button> 
+        </div> 
+        <div className="mt-8 flex items-center justify-center gap-2 border-t border-black/6 pt-6 text-[11px] text-[#8E8E93] dark:border-white/8 dark:text-[#636366]"> 
+          <ShieldCheckIcon className="size-3.5 shrink-0 text-[#34C759] dark:text-[#30D158]" strokeWidth={2} aria-hidden />
           <span>Protected session · TLS encryption</span>
         </div>
       </AuthCardShell>
