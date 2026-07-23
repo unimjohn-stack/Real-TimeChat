@@ -28,6 +28,8 @@ import cookieParser from 'cookie-parser';
 
 const PORT = process.env.PORT;
 const FRONTEND_URL = process.env.FRONTEND_URL;
+console.log("FRONTEND_URL:", FRONTEND_URL);
+console.log("NODE_ENV:", process.env.NODE_ENV);
 
 // console.log("Secret length:", process.env.CLERK_SECRET_KEY?.length);
 
