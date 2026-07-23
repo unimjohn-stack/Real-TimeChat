@@ -7,7 +7,7 @@ import { axiosInstance } from '../lib/axios';
 import { io } from 'socket.io-client';
 
 
-const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:8080" : "/";
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:8080" : "https://amebo-b.onrender.com";
 
 export const useAuthStore = create((set, get) => ({
     authUser: null,
