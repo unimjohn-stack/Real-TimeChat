@@ -34,7 +34,7 @@ console.log("NODE_ENV:", process.env.NODE_ENV);
 // console.log("Secret length:", process.env.CLERK_SECRET_KEY?.length);
 
 app.use(cookieParser());
-app.use("trust proxy", 1);
+app.set("trust proxy", 1);
 app.use(cors({
     origin:FRONTEND_URL,
     credentials: true,
