@@ -44,6 +44,7 @@ export const protectRoute = async (req, res, next) => {
         console.log("===== PROTECT ROUTE =====");
         console.log("Origin:", req.headers.origin);
         console.log("Cookie header:", req.headers.cookie);
+        console.log("URL:", req.originalUrl);
         console.log("Parsed cookies:", req.cookies);
 
         const token = req.cookies.jwt;
